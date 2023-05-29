@@ -1,30 +1,51 @@
-<template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
-</template>
+<script>
+import HeaderComponent from '@/components/header/HeaderComponent'
+import FooterComponent from '@/components/footer/FooterComponent'
+import * as FlowBite from 'flowbite-vue'
+import * as Kinesis from 'vue-kinesis'
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+export default {
+  components: {
+    HeaderComponent,
+    FooterComponent,
+    ...FlowBite,
+    ...Kinesis
+  },
 
-nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+  data () {
+    return {
+      scTimer: 0,
+      scY: 0
+    }
+  },
+  mounted () {
+    window.addEventListener('scroll', this.handleScroll)
+  },
+  methods: {
+    handleScroll: function () {
+      if (this.scTimer) return
+      this.scTimer = setTimeout(() => {
+        this.scY = window.scrollY
+        clearTimeout(this.scTimer)
+        this.scTimer = 0
+      }, 100)
+    },
+    toTop: function () {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
     }
   }
+
 }
-</style>
+</script>
+
+<template>
+  <HeaderComponent />
+  <router-view/>
+  <button class="w-[35px] h-[35px] md:w-[45px] md:h-[45px] bg-primary rounded-full text-white fixed right-2 md:right-5 bottom-20" v-show="scY > 1000" @click="toTop">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+  <FooterComponent />
+</template>
